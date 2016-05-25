@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+
+<html>
+<script src="js/jquery-2.2.3.min.js"></script>
+<script src="js/javacode.js"></script>
+<link href="css/main.css" rel="stylesheet" type="text/css" title = "main" media="screen" />
+
+<body>
+
+  <div id="countingBox">
+    <p id="count"></p>
+    <form>
+      <input type="button" id="btnL" onclick="zoomIn()" value="zoomIn" />
+      <input type="button" id="btnS" onclick="zoomOut()" value="zoomOut" />
+    </form>
+  </div>
+
+  <div class="container">
+    <canvas id="scene" width="2250" height="3000">
+    </canvas>
+  </div>
+
+</body>
+</html>

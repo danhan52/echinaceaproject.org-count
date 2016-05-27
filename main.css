@@ -1,0 +1,25 @@
+.center1 {
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+    background-color: #eeeeee;
+}
+.center2 {
+    margin: auto;
+    width: 60%;
+    border: 3px solid #73AD21;
+    padding: 10px;
+    background-color: #eeeeee;
+    border-radius: 3px;
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+#happy {
+  font-size: 20px;
+  font-weight: bold;
+  color: blue;
+}

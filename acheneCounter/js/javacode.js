@@ -9,6 +9,9 @@ var count = 0;
 
 var DELAY = 300, clicks = 0, timer = null;
 
+var color = '#00FFFF';
+var ptSize = 6;
+
 // -------------------------------------------------------------
 // objects :
 
@@ -23,9 +26,9 @@ function Circle(x, y, radius){
 
 // draw circles on the canvas
 function drawCircle(ctx, x, y) {
-  ctx.fillStyle = 'rgba(0, 255, 255, 1.0)';
+  ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(x*iMult, y*iMult, 4/iMult, 0, Math.PI*2, true);
+  ctx.arc(x*iMult, y*iMult, 6/iMult, 0, Math.PI*2, true);
   ctx.stroke();
   ctx.fill();
 }
@@ -117,6 +120,49 @@ function changeAdding() {
 }
 
 // -------------------------------------------------------------
+// cookies!!
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+    document.getElementById('flop').innerHTML = document.cookie;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function checkCookies() {
+    var col = getCookie("color");
+    var pt = getCookie("ptSize");
+
+    if (col != "") {
+    } else {
+        col = prompt("Please enter your color in hex:", "");
+        if (col != "" && col != null) {
+            setCookie("color", col, 365);
+        }
+        pt = prompt("Please enter pointSize:", "");
+        if (pt != "" && pt != null) {
+            setCookie("ptSize", pt, 365);
+        }
+    }
+}
+
+// -------------------------------------------------------------
 // initialization
 
 $(function(){
@@ -127,6 +173,21 @@ $(function(){
   imageObj.onload = function() {
     ctx.drawImage(imageObj, 1, 1, iWidth, iHeight);
   };
+
+  // checkCookies();
+  setCookie("color", "00FF99", 1);
+  color = '#' + getCookie("color");
+  ptSize = getCookie("ptSize");
+
+  // if (getParameterByName('color') != null) {
+  //   color = '#' + getParameterByName('color');
+  // }
+  //
+  // if (getParameterByName('ptSize') != null) {
+  //   ptSize = getParameterByName('ptSize');
+  // }
+
+
 
   // binding mouseclick event (for adding new dots)
   $('#scene').click(function(e) {

@@ -23,7 +23,7 @@ function Circle(x, y, radius){
 
 // draw circles on the canvas
 function drawCircle(ctx, x, y) {
-  ctx.fillStyle = 'rgba(255, 35, 55, 1.0)';
+  ctx.fillStyle = 'rgba(0, 255, 255, 1.0)';
   ctx.beginPath();
   ctx.arc(x*iMult, y*iMult, 4/iMult, 0, Math.PI*2, true);
   ctx.stroke();

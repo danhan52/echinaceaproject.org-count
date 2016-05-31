@@ -1,5 +1,7 @@
 var iWidth = 2250;
 var iHeight = 3000;
+var initWidth = 2250;
+var initHeight = 3000;
 var iMult = 1;
 var imageObj;
 
@@ -82,9 +84,9 @@ function getPosition(el) {
 
 // zoom out and decrease canvas size
 function zoomOut() {
-  iWidth *= 0.75;
-  iHeight *= 0.75;
-  iMult *= 0.75;
+  iWidth *= 0.65;
+  iHeight *= 0.65;
+  iMult *= 0.65;
 
   canvas.style.width = iWidth + "px";
   canvas.style.height = iHeight + "px";
@@ -94,9 +96,9 @@ function zoomOut() {
 
 // zoom in and increase canvas size
 function zoomIn() {
-  iWidth /= 0.75;
-  iHeight /= 0.75;
-  iMult /= 0.75;
+  iWidth /= 0.65;
+  iHeight /= 0.65;
+  iMult /= 0.65;
 
   canvas.style.width = iWidth + "px";
   canvas.style.height = iHeight + "px";
@@ -116,11 +118,6 @@ function getParameterByName(name, url) {
   if (!results) return null;
   if (!results[2]) return "";
   return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
-// switch adding
-function changeAdding() {
-  adding = !adding;
 }
 
 // -------------------------------------------------------------
@@ -174,6 +171,7 @@ function changePreferences() {
   setCookie("color", color, 365);
   ptSize = document.getElementById("pts").value;
   setCookie("ptSize", ptSize, 365);
+  clear();
 }
 
 
@@ -190,7 +188,7 @@ $(function(){
   imageObj = new Image();
   imageObj.src = getParameterByName("img");
   imageObj.onload = function() {
-    ctx.drawImage(imageObj, 1, 1, iWidth, iHeight);
+    ctx.drawImage(imageObj, 1, 1, initWidth, initHeight);
   };
 
   if (getCookie("color") != "") {

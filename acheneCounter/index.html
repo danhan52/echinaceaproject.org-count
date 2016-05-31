@@ -9,20 +9,38 @@
 <link href="css/main.css" rel="stylesheet" type="text/css" title = "main" media="screen" />
 
 <body>
-
+  <div id="preferences">
+    <form>
+      <span>Point color:</span>
+      <select id="colors">
+        <option value="turquoise">turquoise</option>
+        <option value="red">red</option>
+        <option value="green">green</option>
+        <option value="blue">blue</option>
+        <option value="yellow">yellow</option>
+      </select>
+      <span>Point size:</span>
+      <input id="pts"></input>
+      <input type="button" onclick="changePreferences()" value="Change preferences" />
+    </form>
+  </div>
   <div id="countingBox">
     <p id="count"></p>
     <form>
       <input type="button" id="btnL" onclick="zoomIn()" value="zoomIn" />
       <input type="button" id="btnS" onclick="zoomOut()" value="zoomOut" />
     </form>
-      <p id="flop"></p>
   </div>
 
-  <div class="container">
+  <!-- <div class="container"> -->
     <canvas id="scene" width="2250" height="3000">
     </canvas>
-  </div>
+  <!-- </div> -->
+
+  <p id="disclaimer">Note that this site uses cookies to save preferences for
+    the points placed on the image while counting. To not use cookies, don't
+    press the "Change preferences" button.
+  </p>
 
 </body>
 </html>

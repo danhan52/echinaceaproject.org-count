@@ -9,7 +9,7 @@ var count = 0;
 
 var DELAY = 300, clicks = 0, timer = null;
 
-var color = '#00FFFF';
+var color = "turquoise";
 var ptSize = 6;
 
 // -------------------------------------------------------------
@@ -26,9 +26,13 @@ function Circle(x, y, radius){
 
 // draw circles on the canvas
 function drawCircle(ctx, x, y) {
-  ctx.fillStyle = color;
+  if (color == "turquoise") {
+    ctx.fillStyle = "#00FFFF";
+  } else {
+    ctx.fillStyle = color;
+  }
   ctx.beginPath();
-  ctx.arc(x*iMult, y*iMult, 6/iMult, 0, Math.PI*2, true);
+  ctx.arc(x*iMult, y*iMult, ptSize/iMult, 0, Math.PI*2, true);
   ctx.stroke();
   ctx.fill();
 }
@@ -46,7 +50,7 @@ function drawScene() {
     drawCircle(ctx, circles[i].x, circles[i].y);
   }
 
-  document.getElementById('count').innerHTML = "Achenes: " + count;
+  document.getElementById("count").innerHTML = "Achenes: " + count;
 }
 
 // get position relative to canvas
@@ -110,7 +114,7 @@ function getParameterByName(name, url) {
   var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
   results = regex.exec(url);
   if (!results) return null;
-  if (!results[2]) return '';
+  if (!results[2]) return "";
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
@@ -122,20 +126,23 @@ function changeAdding() {
 // -------------------------------------------------------------
 // cookies!!
 
-function setCookie(cname, cvalue, exdays) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = "expires="+d.toUTCString();
-    document.cookie = cname + "=" + cvalue + "; " + expires;
-    document.getElementById('flop').innerHTML = document.cookie;
+function setCookie(name, value, days) {
+  if (days) {
+    var date = new Date();
+    date.setTime(date.getTime() + days*24*60*60*1000);
+    var expires = "; expires=" + date.toGMTString();
+  } else {
+    var expires = "";
+  }
+  document.cookie = name + "=" + value + expires + ";path=/";
 }
 
 function getCookie(cname) {
     var name = cname + "=";
-    var ca = document.cookie.split(';');
+    var ca = document.cookie.split(";");
     for(var i = 0; i < ca.length; i++) {
         var c = ca[i];
-        while (c.charAt(0) == ' ') {
+        while (c.charAt(0) == " ") {
             c = c.substring(1);
         }
         if (c.indexOf(name) == 0) {
@@ -162,35 +169,41 @@ function checkCookies() {
     }
 }
 
+function changePreferences() {
+  color = document.getElementById("colors").value;
+  setCookie("color", color, 365);
+  ptSize = document.getElementById("pts").value;
+  setCookie("ptSize", ptSize, 365);
+}
+
+
+function eraseCookie(name) {
+	setCookie(name,"",-1);
+}
+
 // -------------------------------------------------------------
 // initialization
 
 $(function(){
-  canvas = document.getElementById('scene');
-  ctx = canvas.getContext('2d');
+  canvas = document.getElementById("scene");
+  ctx = canvas.getContext("2d");
   imageObj = new Image();
   imageObj.src = getParameterByName("img");
   imageObj.onload = function() {
     ctx.drawImage(imageObj, 1, 1, iWidth, iHeight);
   };
 
-  // checkCookies();
-  setCookie("color", "00FF99", 1);
-  color = '#' + getCookie("color");
-  ptSize = getCookie("ptSize");
-
-  // if (getParameterByName('color') != null) {
-  //   color = '#' + getParameterByName('color');
-  // }
-  //
-  // if (getParameterByName('ptSize') != null) {
-  //   ptSize = getParameterByName('ptSize');
-  // }
-
-
+  if (getCookie("color") != "") {
+    color = getCookie("color");
+    document.getElementById("colors").value = color;
+  }
+  if (getCookie("ptSize") != "") {
+    ptSize = getCookie("ptSize");
+    document.getElementById("pts").value = ptSize;
+  }
 
   // binding mouseclick event (for adding new dots)
-  $('#scene').click(function(e) {
+  $("#scene").click(function(e) {
     var parentPosition = getPosition(e.currentTarget);
     var mouseX = (e.clientX - parentPosition.x)/Math.pow(iMult,2);
     var mouseY = (e.clientY - parentPosition.y)/Math.pow(iMult,2);
@@ -220,7 +233,7 @@ $(function(){
     }
   });
 
-  $('#scene').dblclick(function(e) {
+  $("#scene").dblclick(function(e) {
     e.preventDefault();  //cancel system double-click event
   });
 

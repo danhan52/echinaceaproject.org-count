@@ -34,14 +34,14 @@ function drawCircle(ctx, x, y) {
     ctx.fillStyle = color;
   }
   ctx.beginPath();
-  ctx.arc(x*iMult, y*iMult, ptSize/iMult, 0, Math.PI*2, true);
+  ctx.arc(x, y, ptSize/iMult, 0, Math.PI*2, true);
   ctx.stroke();
   ctx.fill();
 }
 
 function clear() { // clear canvas function
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.drawImage(imageObj, 1, 1, iWidth, iHeight);
+  ctx.drawImage(imageObj, 1, 1, initWidth, initHeight);
 }
 
 
@@ -169,7 +169,9 @@ function checkCookies() {
 function changePreferences() {
   color = document.getElementById("colors").value;
   setCookie("color", color, 365);
-  ptSize = document.getElementById("pts").value;
+  if (document.getElementById("pts").value) {
+    ptSize = document.getElementById("pts").value;
+  }
   setCookie("ptSize", ptSize, 365);
   clear();
 }
@@ -203,8 +205,8 @@ $(function(){
   // binding mouseclick event (for adding new dots)
   $("#scene").click(function(e) {
     var parentPosition = getPosition(e.currentTarget);
-    var mouseX = (e.clientX - parentPosition.x)/Math.pow(iMult,2);
-    var mouseY = (e.clientY - parentPosition.y)/Math.pow(iMult,2);
+    var mouseX = (e.clientX - parentPosition.x)/iMult;
+    var mouseY = (e.clientY - parentPosition.y)/iMult;
 
     clicks++;
 
@@ -219,7 +221,7 @@ $(function(){
       count++;
       for (var i=0; i<circles.length; i++) {
         if (Math.pow(Math.pow(circles[i].x - mouseX, 2) +
-        Math.pow(circles[i].y - mouseY, 2), 1/2) < 7) {
+        Math.pow(circles[i].y - mouseY, 2), 1/2) < ptSize/iMult) {
           circles.splice(i, 1);
           i -= 1;
           count--;

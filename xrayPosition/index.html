@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+  <title>X-ray counter</title>
+</head>
+<script src="js/jquery-2.2.3.min.js"></script>
+<script src="js/javacode.js"></script>
+<link href="css/main.css" rel="stylesheet" type="text/css" title = "main" media="screen" />
+
+<body>
+
+  <div id="countingBox">
+    <p id="nowCount">Now counting: <span id="full">FULL</span></p>
+    <br>
+    <p><span id="full">full</span> achenes: <span id="fullCt"></span></p>
+    <p><span id="partial">partial</span> achenes: <span id="partialCt"></span></p>
+    <p><span id="empty">empty</span> achenes: <span id="emptyCt"></span></p>
+    <br>
+    <input type="button" id="switchCt" onclick="switchCount()" value="Switch Counting Type" />
+    <p id="figgin">or press the 's' key to switch</p>
+  </div>
+
+  <div class="container">
+    <canvas id="scene" width="700" height="1000">
+    </canvas>
+    <div class="footer">
+      <p>Page created by: Danny Hanson</p>
+      <a href="https://github.com/danhan52/echinaceaproject.org-count/issues" target="_newtab">
+        Please report issues here</a>
+    </div>
+  </div>
+
+</body>
+</html>

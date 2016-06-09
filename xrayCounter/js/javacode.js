@@ -5,39 +5,39 @@ var imageObj;
 
 var canvas, ctx;
 var nowCounting = "full";
-var full = [];
 var fullCt = 0;
-var partial = [];
 var partialCt = 0;
-var empty = [];
 var emptyCt = 0;
+
+var circles = [];
 
 var DELAY = 300, clicks = 0, timer = null;
 
 // -------------------------------------------------------------
 // objects :
 
-function Circle(x, y, radius) {
+function Circle(x, y, radius, type) {
   this.x = x;
   this.y = y;
   this.radius = radius;
+  this.type = type;
 }
 
 // -------------------------------------------------------------
 // drawing functions
 
 // draw circles on the canvas
-function drawCircle(ctx, x, y, type) {
-  if (type == "f") {
-    ctx.fillStyle = 'rgba(35, 255, 55, 1.0)';
-  } else if (type == "p") {
-    ctx.fillStyle = 'rgba(55, 35, 255, 1.0)';
-  }  else if (type == "e") {
-    ctx.fillStyle = 'rgba(255, 35, 35, 1.0)';
+function drawCircle(ctx, x, y, radius, type) {
+  if (type == "full") {
+    ctx.fillStyle = 'rgba(3, 179, 0, 1.0)';
+  } else if (type == "partial") {
+    ctx.fillStyle = 'rgba(181, 91, 0, 1.0)';
+  }  else if (type == "empty") {
+    ctx.fillStyle = 'rgba(173, 0, 179, 1.0)';
   }
 
   ctx.beginPath();
-  ctx.arc(x*iMult, y*iMult, 4/iMult, 0, Math.PI*2, true);
+  ctx.arc(x*iMult, y*iMult, radius/iMult, 0, Math.PI*2, true);
   ctx.stroke();
   ctx.fill();
 }
@@ -50,20 +50,13 @@ function clear() { // clear canvas function
 
 // draw the whole scene
 function drawScene() {
-  //clear();
-  for (var i=0; i<full.length; i++) { // display all our circles
-    drawCircle(ctx, full[i].x, full[i].y, "f");
-  }
-  for (var i=0; i<partial.length; i++) { // display all our circles
-    drawCircle(ctx, partial[i].x, partial[i].y, "p");
-  }
-  for (var i=0; i<empty.length; i++) { // display all our circles
-    drawCircle(ctx, empty[i].x, empty[i].y, "e");
+  for (var i=0; i<circles.length; i++) {
+    drawCircle(ctx, circles[i].x, circles[i].y, circles[i].radius, circles[i].type);
   }
 
-  document.getElementById('fullCt').innerHTML = full.length;
-  document.getElementById('partialCt').innerHTML = partial.length;
-  document.getElementById('emptyCt').innerHTML = empty.length;
+  document.getElementById('fullCt').innerHTML = fullCt;
+  document.getElementById('partialCt').innerHTML = partialCt;
+  document.getElementById('emptyCt').innerHTML = emptyCt;
 }
 
 // get position relative to canvas
@@ -131,24 +124,19 @@ function getParameterByName(name, url) {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-// switch adding
-function changeAdding() {
-  adding = !adding;
-}
-
 function switchCount() {
   if (nowCounting == "full") {
     nowCounting = "partial";
     document.getElementById("nowCount").innerHTML = "Now counting:" +
-      "<br><span id='partial'>PARTIAL</span>";
+    "<br><span id='partial'>PARTIAL</span>";
   } else if (nowCounting == "partial") {
     nowCounting = "empty";
     document.getElementById("nowCount").innerHTML = "Now counting:" +
-      "<br><span id='empty'>EMPTY</span>";
+    "<br><span id='empty'>EMPTY</span>";
   } else if (nowCounting == "empty") {
     nowCounting = "full";
     document.getElementById("nowCount").innerHTML = "Now counting:" +
-      "<br><span id='full'>FULL</span>";
+    "<br><span id='full'>FULL</span>";
   }
 }
 
@@ -181,13 +169,8 @@ $(function(){
     clicks++;
 
     if(clicks == 1) {
-      if (nowCounting == "full") {
-        full.push(new Circle(mouseX, mouseY));
-      } else if (nowCounting == "partial") {
-        partial.push(new Circle(mouseX, mouseY));
-      } else if (nowCounting == "empty") {
-        empty.push(new Circle(mouseX, mouseY));
-      }
+      circles.push(new Circle(mouseX, mouseY, 4, nowCounting))
+
       timer = setTimeout(function() {
         if (nowCounting == "full") {
           fullCt++;
@@ -198,42 +181,25 @@ $(function(){
         }
         clicks = 0;             //after action performed, reset counter
       }, DELAY);
+
     } else {
       clearTimeout(timer);    //prevent single-click action
       if(document.selection && document.selection.empty) {
         document.selection.empty();
-    } else if(window.getSelection) {
+      } else if(window.getSelection) {
         var sel = window.getSelection();
         sel.removeAllRanges();
-    }
-      var didit;
-      if (full.length > 0) {
-        for (var i=0; i<full.length; i++) {
-          if (Math.pow(Math.pow(full[i].x - mouseX, 2) +
-          Math.pow(full[i].y - mouseY, 2), 1/2) < 7) {
-            full.splice(i, 1);
+      }
+      if (circles.length > 0) {
+        for (var i=0; i<circles.length; i++) {
+          if (Math.pow(Math.pow(circles[i].x - mouseX, 2) +
+          Math.pow(circles[i].y - mouseY, 2), 1/2) < 7) {
+            circles.splice(i, 1);
             i -= 1;
           }
         }
       }
-      if (partial.length > 0) {
-        for (var i=0; i<partial.length; i++) {
-          if (Math.pow(Math.pow(partial[i].x - mouseX, 2) +
-          Math.pow(partial[i].y - mouseY, 2), 1/2) < 7) {
-            partial.splice(i, 1);
-            i -= 1;
-          }
-        }
-      }
-      if (empty.length > 0) {
-        for (var i=0; i<empty.length; i++) {
-          if (Math.pow(Math.pow(empty[i].x - mouseX, 2) +
-          Math.pow(empty[i].y - mouseY, 2), 1/2) < 7) {
-            empty.splice(i, 1);
-            i -= 1;
-          }
-        }
-      }
+
       clear();
       drawScene();
       clicks = 0;             //after action performed, reset counter

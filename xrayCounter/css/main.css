@@ -47,16 +47,16 @@ body {
 }
 
 #full {
-  color: green;
+  color: #03b300;
   font-weight: bold;
 }
 
 #partial {
-  color: blue;
+  color: #b35700;
   font-weight: bold;
 }
 
 #empty {
-  color: red;
+  color: #b000b3;
   font-weight: bold;
 }

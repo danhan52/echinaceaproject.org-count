@@ -1,33 +1,37 @@
 var iWidth = 700;
 var iHeight = 1000;
 var iMult = 1;
+var whichImage = 1;
+var whereImage = "http://echinaceaproject.org/count/xrayPosition/images/";
 var imageObj;
 
 var canvas, ctx;
 var nowCounting = "full";
 var wasCounting = "full";
-var fullCt = 0;
-var partialCt = 0;
-var emptyCt = 0;
+var fullCt = [];
+var partialCt = [];
+var emptyCt = [];
 
 var circles = [];
+
 
 var DELAY = 300, clicks = 0, timer = null;
 
 // -------------------------------------------------------------
 // objects :
 
-function Circle(x, y, radius, type) {
+function Circle(x, y, radius, type, fromImage) {
   this.x = x;
   this.y = y;
   this.radius = radius;
   this.type = type;
+  this.fromImage = fromImage;
 }
 
 // -------------------------------------------------------------
 // drawing functions
 
-// draw circles on the canvas
+// draw circles[whichImage] on the canvas
 function drawCircle(ctx, x, y, radius, type) {
   if (type == "full") {
     ctx.fillStyle = 'rgba(3, 179, 0, 1.0)';
@@ -51,23 +55,13 @@ function clear() { // clear canvas function
 
 // draw the whole scene
 function drawScene() {
-  // fullCt = 0;
-  // partialCt = 0;
-  // emptyCt = 0;
-  for (var i=0; i<circles.length; i++) {
-    // if (circles[i].type == "full") {
-    //   fullCt++;
-    // } else if (circles[i].type == "partial") {
-    //   partialCt++;
-    // } else if (circles[i].type == "empty") {
-    //   emptyCt++;
-    // }
-    drawCircle(ctx, circles[i].x, circles[i].y, circles[i].radius, circles[i].type);
+  for (var i=0; i<circles[whichImage].length; i++) {
+    drawCircle(ctx, circles[whichImage][i].x, circles[whichImage][i].y, circles[whichImage][i].radius, circles[whichImage][i].type);
   }
 
-  document.getElementById('fullCt').innerHTML = fullCt;
-  document.getElementById('partialCt').innerHTML = partialCt;
-  document.getElementById('emptyCt').innerHTML = emptyCt;
+  document.getElementById('fullCt').innerHTML = fullCt[whichImage];
+  document.getElementById('partialCt').innerHTML = partialCt[whichImage];
+  document.getElementById('emptyCt').innerHTML = emptyCt[whichImage];
 }
 
 // get position relative to canvas
@@ -97,43 +91,8 @@ function getPosition(el) {
   };
 }
 
-// zoom out and decrease canvas size
-function zoomOut() {
-  iWidth *= 0.75;
-  iHeight *= 0.75;
-  iMult *= 0.75;
-
-  canvas.style.width = iWidth + "px";
-  canvas.style.height = iHeight + "px";
-  clear();
-  drawScene();
-}
-
-// zoom in and increase canvas size
-function zoomIn() {
-  iWidth /= 0.75;
-  iHeight /= 0.75;
-  iMult /= 0.75;
-
-  canvas.style.width = iWidth + "px";
-  canvas.style.height = iHeight + "px";
-  clear();
-  drawScene();
-}
-
 // -------------------------------------------------------------
 // other helper functions
-
-// get a query string from the url
-function getParameterByName(name, url) {
-  if (!url) url = window.location.href;
-  name = name.replace(/[\[\]]/g, "\\$&");
-  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-  results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return '';
-  return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
 
 // switch from one type of counting (e.g. full) to another
 function switchCount() {
@@ -154,33 +113,46 @@ function switchCount() {
 
 // create a csv for download
 function makecsv() {
-  var csvContent = "data:text/csv;charset=utf-8,x,y,type\n";
-  circles.forEach(function(circ, index) {
-    csvContent += circ.x + "," + circ.y + "," + circ.type + "\n";
-  })
-  // var encodedUri = encodeURI(csvContent);
-  // window.open(encodedUri);
+  var csvContent = "data:text/csv;charset=utf-8,x,y,type,image\n";
+  for (var i=0; i<20; i++) {
+    if (circles[i].length > 0) {
+      for (var j=0; j<circles[i].length; j++) {
+          csvContent += circles[i][j].x + "," + circles[i][j].y + "," + circles[i][j].type + "," + circles[i][j].fromImage + "\n";
+      }
+    }
+  }
+
   var encodedUri = encodeURI(csvContent);
   var link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  var fileNameList = getParameterByName("img").split("/");
-  var fileName = fileNameList[fileNameList.length-1];
-  fileName = fileName.replace(".jpg", "");
-  link.setAttribute("download", fileName+".csv");
+  link.setAttribute("download", "countData.csv");
   document.body.appendChild(link); // Required for FF
 
   link.click(); // This will download the data file named "my_data.csv".
+}
+
+function switchImage() {
+  whichImage = document.getElementById("images").value;
+  imageObj.src = whereImage + whichImage + ".jpg";
+  clear();
+  drawScene();
 }
 
 // -------------------------------------------------------------
 // initialization
 
 $(function(){
-  //document.getElementById("nowCount").innerHTML = nowCounting;
+  for (var i = 0; i < 20; i++) {
+    circles.push([]);
+    fullCt.push(0);
+    partialCt.push(0);
+    emptyCt.push(0);
+  }
+
   canvas = document.getElementById('scene');
   ctx = canvas.getContext('2d');
   imageObj = new Image();
-  imageObj.src = getParameterByName("img");
+  imageObj.src = whereImage + whichImage + ".jpg";
   imageObj.onload = function() {
     ctx.drawImage(imageObj, 1, 1, iWidth, iHeight);
   };
@@ -201,16 +173,16 @@ $(function(){
     clicks++;
 
     if(clicks == 1) {
-      circles.push(new Circle(mouseX, mouseY, 4, nowCounting))
+      circles[whichImage].push(new Circle(mouseX, mouseY, 4, nowCounting, whichImage))
       wasCounting = nowCounting;
 
       timer = setTimeout(function() {
         if (wasCounting == "full") {
-          fullCt++;
+          fullCt[whichImage]++;
         } else if (wasCounting == "partial") {
-          partialCt++;
+          partialCt[whichImage]++;
         } else if (wasCounting == "empty") {
-          emptyCt++;
+          emptyCt[whichImage]++;
         }
         clicks = 0;             //after action performed, reset counter
       }, DELAY);
@@ -225,24 +197,24 @@ $(function(){
       }
 
       if (wasCounting == "full") {
-        fullCt++;
+        fullCt[whichImage]++;
       } else if (wasCounting == "partial") {
-        partialCt++;
+        partialCt[whichImage]++;
       } else if (wasCounting == "empty") {
-        emptyCt++;
+        emptyCt[whichImage]++;
       }
 
-      for (var i=0; i<circles.length; i++) {
-        if (Math.pow(Math.pow(circles[i].x - mouseX, 2) +
-        Math.pow(circles[i].y - mouseY, 2), 1/2) < 7) {
-          if (circles[i].type == "full") {
-            fullCt--;
-          } else if (circles[i].type == "partial") {
-            partialCt--;
-          } else if (circles[i].type == "empty") {
-            emptyCt--;
+      for (var i=0; i<circles[whichImage].length; i++) {
+        if (Math.pow(Math.pow(circles[whichImage][i].x - mouseX, 2) +
+        Math.pow(circles[whichImage][i].y - mouseY, 2), 1/2) < 7) {
+          if (circles[whichImage][i].type == "full") {
+            fullCt[whichImage]--;
+          } else if (circles[whichImage][i].type == "partial") {
+            partialCt[whichImage]--;
+          } else if (circles[whichImage][i].type == "empty") {
+            emptyCt[whichImage]--;
           }
-          circles.splice(i, 1);
+          circles[whichImage].splice(i, 1);
           i -= 1;
         }
       }

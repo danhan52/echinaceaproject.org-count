@@ -1,10 +1,11 @@
-var iWidth = 700;
+svar iWidth = 700;
 var iHeight = 1000;
 var iMult = 1;
 var imageObj;
 
 var canvas, ctx;
 var nowCounting = "full";
+var wasCounting = "full";
 var fullCt = 0;
 var partialCt = 0;
 var emptyCt = 0;
@@ -124,6 +125,7 @@ function getParameterByName(name, url) {
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+// switch from one type of counting (e.g. full) to another
 function switchCount() {
   if (nowCounting == "full") {
     nowCounting = "partial";
@@ -138,6 +140,26 @@ function switchCount() {
     document.getElementById("nowCount").innerHTML = "Now counting:" +
     "<br><span id='full'>FULL</span>";
   }
+}
+
+// create a csv for download
+function makecsv() {
+  var csvContent = "data:text/csv;charset=utf-8,x,y,type\n";
+  circles.forEach(function(circ, index) {
+    csvContent += circ.x + "," + circ.y + "," + circ.type + "\n";
+  })
+  // var encodedUri = encodeURI(csvContent);
+  // window.open(encodedUri);
+  var encodedUri = encodeURI(csvContent);
+  var link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  var fileNameList = getParameterByName("img").split("/");
+  var fileName = fileNameList[fileNameList.length-1];
+  fileName = fileName.replace(".jpg", "");
+  link.setAttribute("download", fileName+".csv");
+  document.body.appendChild(link); // Required for FF
+
+  link.click(); // This will download the data file named "my_data.csv".
 }
 
 // -------------------------------------------------------------
@@ -170,13 +192,14 @@ $(function(){
 
     if(clicks == 1) {
       circles.push(new Circle(mouseX, mouseY, 4, nowCounting))
+      wasCounting = nowCounting;
 
       timer = setTimeout(function() {
-        if (nowCounting == "full") {
+        if (wasCounting == "full") {
           fullCt++;
-        } else if (nowCounting == "partial") {
+        } else if (wasCounting == "partial") {
           partialCt++;
-        } else if (nowCounting == "empty") {
+        } else if (wasCounting == "empty") {
           emptyCt++;
         }
         clicks = 0;             //after action performed, reset counter
@@ -190,13 +213,27 @@ $(function(){
         var sel = window.getSelection();
         sel.removeAllRanges();
       }
-      if (circles.length > 0) {
-        for (var i=0; i<circles.length; i++) {
-          if (Math.pow(Math.pow(circles[i].x - mouseX, 2) +
-          Math.pow(circles[i].y - mouseY, 2), 1/2) < 7) {
-            circles.splice(i, 1);
-            i -= 1;
+
+      if (wasCounting == "full") {
+        fullCt++;
+      } else if (wasCounting == "partial") {
+        partialCt++;
+      } else if (wasCounting == "empty") {
+        emptyCt++;
+      }
+
+      for (var i=0; i<circles.length; i++) {
+        if (Math.pow(Math.pow(circles[i].x - mouseX, 2) +
+        Math.pow(circles[i].y - mouseY, 2), 1/2) < 7) {
+          if (circles[i].type == "full") {
+            fullCt--;
+          } else if (circles[i].type == "partial") {
+            partialCt--;
+          } else if (circles[i].type == "empty") {
+            emptyCt--;
           }
+          circles.splice(i, 1);
+          i -= 1;
         }
       }
 

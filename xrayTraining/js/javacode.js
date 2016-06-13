@@ -1,4 +1,6 @@
-var data = $.csv.toObjects(csv);
+
+
+// var data = $.csv.toArrays(csv);
 
 var iWidth = 700;
 var iHeight = 1000;
@@ -102,14 +104,17 @@ function switchCount() {
     nowCounting = "partial";
     document.getElementById("nowCount").innerHTML = "Now counting:" +
     "<br><span id='partial'>PARTIAL</span>";
+    canvas.style.cursor = 'url(cursors/partial-pointer.cur), auto';
   } else if (nowCounting == "partial") {
     nowCounting = "empty";
     document.getElementById("nowCount").innerHTML = "Now counting:" +
     "<br><span id='empty'>EMPTY</span>";
+    canvas.style.cursor = 'url(cursors/empty-pointer.cur), auto';
   } else if (nowCounting == "empty") {
     nowCounting = "full";
     document.getElementById("nowCount").innerHTML = "Now counting:" +
     "<br><span id='full'>FULL</span>";
+    canvas.style.cursor = 'url(cursors/full-pointer.cur), auto';
   }
 }
 
@@ -152,6 +157,7 @@ $(function(){
   }
 
   canvas = document.getElementById('scene');
+  canvas.style.cursor = 'url(cursors/full-pointer.cur), auto';
   ctx = canvas.getContext('2d');
   imageObj = new Image();
   imageObj.src = whereImage + whichImage + ".jpg";

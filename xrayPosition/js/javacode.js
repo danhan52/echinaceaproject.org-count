@@ -131,7 +131,7 @@ function makecsv() {
   link.setAttribute("download", "countData.csv");
   document.body.appendChild(link); // Required for FF
 
-  link.click(); // This will download the data file named "my_data.csv".
+  link.click(); // This will download the data file 
 }
 
 function switchImage() {

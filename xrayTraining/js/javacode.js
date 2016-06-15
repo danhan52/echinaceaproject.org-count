@@ -1,7 +1,3 @@
-
-
-// var data = $.csv.toArrays(csv);
-
 var iWidth = 700;
 var iHeight = 1000;
 var iMult = 1;
@@ -148,12 +144,42 @@ function switchImage() {
 // -------------------------------------------------------------
 // initialization
 
+function grabamaruggen() {
+  var result = null;
+  var scriptUrl = "csvs/countData1.csv";
+  $.ajax({
+    url: scriptUrl,
+    type: 'get',
+    dataType: 'html',
+    async: false,
+    success: function(data) {
+      result = data;
+    }
+  });
+  return result;
+}
+
 $(function(){
   for (var i = 0; i < 20; i++) {
     circles.push([]);
     fullCt.push(0);
     partialCt.push(0);
     emptyCt.push(0);
+  }
+
+  var dafil = grabamaruggen();
+  var data = $.csv.toArrays(dafil);
+  // alert(data);
+  // document.getElementById("digit1").innerHTML = data[0][0];
+  // document.getElementById("digit2").innerHTML = data[1][0];
+  // document.getElementById("digit3").innerHTML = data[2][0];
+  // document.getElementById("digit4").innerHTML = data[3][0];
+  // document.getElementById("digit5").innerHTML = data[4][0];
+  // document.getElementById("digit6").innerHTML = data[5][0];
+  // document.getElementById("digit7").innerHTML = data[6][0];
+  // document.getElementById("digit8").innerHTML = data[7][0];
+  for (var i=1; i<data.length; i++) {
+    circles[1].push(new Circle(data[i][0], data[i][1], 4, data[i][2], data[i][3]))
   }
 
   canvas = document.getElementById('scene');

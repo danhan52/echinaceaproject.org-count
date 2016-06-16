@@ -13,6 +13,7 @@ var partialCt = [];
 var emptyCt = [];
 
 var circles = [];
+var circles2 = [];
 
 
 var DELAY = 300, clicks = 0, timer = null;
@@ -100,17 +101,17 @@ function switchCount() {
     nowCounting = "partial";
     document.getElementById("nowCount").innerHTML = "Now counting:" +
     "<br><span id='partial'>PARTIAL</span>";
-    canvas.style.cursor = 'url(cursors/partial-pointer.cur), auto';
+    document.getElementsByTagName("body")[0].style.cursor = 'url(cursors/partial-pointer.cur), auto';
   } else if (nowCounting == "partial") {
     nowCounting = "empty";
     document.getElementById("nowCount").innerHTML = "Now counting:" +
     "<br><span id='empty'>EMPTY</span>";
-    canvas.style.cursor = 'url(cursors/empty-pointer.cur), auto';
+    document.getElementsByTagName("body")[0].style.cursor = 'url(cursors/empty-pointer.cur), auto';
   } else if (nowCounting == "empty") {
     nowCounting = "full";
     document.getElementById("nowCount").innerHTML = "Now counting:" +
     "<br><span id='full'>FULL</span>";
-    canvas.style.cursor = 'url(cursors/full-pointer.cur), auto';
+    document.getElementsByTagName("body")[0].style.cursor = 'url(cursors/full-pointer.cur), auto';
   }
 }
 
@@ -162,6 +163,7 @@ function grabamaruggen() {
 $(function(){
   for (var i = 0; i < 20; i++) {
     circles.push([]);
+    circles2.push([]);
     fullCt.push(0);
     partialCt.push(0);
     emptyCt.push(0);
@@ -169,6 +171,9 @@ $(function(){
 
   var dafil = grabamaruggen();
   var data = $.csv.toArrays(dafil);
+  for (var i=1; i<data.length; i++) {
+    circles2[1].push(new Circle(data[i][0], data[i][1], 4, data[i][2], data[i][3]))
+  }
   // alert(data);
   // document.getElementById("digit1").innerHTML = data[0][0];
   // document.getElementById("digit2").innerHTML = data[1][0];
@@ -178,12 +183,10 @@ $(function(){
   // document.getElementById("digit6").innerHTML = data[5][0];
   // document.getElementById("digit7").innerHTML = data[6][0];
   // document.getElementById("digit8").innerHTML = data[7][0];
-  for (var i=1; i<data.length; i++) {
-    circles[1].push(new Circle(data[i][0], data[i][1], 4, data[i][2], data[i][3]))
-  }
+
 
   canvas = document.getElementById('scene');
-  canvas.style.cursor = 'url(cursors/full-pointer.cur), auto';
+  document.getElementsByTagName("body")[0].style.cursor = 'url(cursors/full-pointer.cur), auto';
   ctx = canvas.getContext('2d');
   imageObj = new Image();
   imageObj.src = whereImage + whichImage + ".jpg";
@@ -199,7 +202,11 @@ $(function(){
 
   // binding mouseclick event (for adding new dots)
   $('#scene').click(function(e) {
-
+    var foundIt = false;
+    var rightType = false;
+    setTimeout(function() {
+      $("#wrongtype").fadeOut().empty();
+    }, 5000);
     var parentPosition = getPosition(e.currentTarget);
     var mouseX = (e.clientX - parentPosition.x)/Math.pow(iMult,2);
     var mouseY = (e.clientY - parentPosition.y)/Math.pow(iMult,2);
@@ -207,20 +214,38 @@ $(function(){
     clicks++;
 
     if(clicks == 1) {
-      circles[whichImage].push(new Circle(mouseX, mouseY, 4, nowCounting, whichImage))
       wasCounting = nowCounting;
 
-      timer = setTimeout(function() {
-        if (wasCounting == "full") {
-          fullCt[whichImage]++;
-        } else if (wasCounting == "partial") {
-          partialCt[whichImage]++;
-        } else if (wasCounting == "empty") {
-          emptyCt[whichImage]++;
+      for (var i=0; i<circles2[whichImage].length; i++) {
+        if (Math.pow(Math.pow(circles2[whichImage][i].x - mouseX, 2) +
+        Math.pow(circles2[whichImage][i].y - mouseY, 2), 1/2) < 15) {
+          foundIt = true;
+          if (wasCounting == circles2[whichImage][i].type) {
+            rightType = true;
+          }
         }
-        clicks = 0;             //after action performed, reset counter
-      }, DELAY);
-
+      }
+      if (foundIt) {
+        if (rightType) {
+          circles[whichImage].push(new Circle(mouseX, mouseY, 4, nowCounting, whichImage))
+          timer = setTimeout(function() {
+            if (wasCounting == "full") {
+              fullCt[whichImage]++;
+            } else if (wasCounting == "partial") {
+              partialCt[whichImage]++;
+            } else if (wasCounting == "empty") {
+              emptyCt[whichImage]++;
+            }
+            clicks = 0;             //after action performed, reset counter
+          }, DELAY);
+        } else {
+          alert("Wrong type!")
+          clicks = 0;
+        }
+      } else {
+        alert("There's nothing there!")
+        clicks = 0;
+      }
     } else {
       clearTimeout(timer);    //prevent single-click action
       if(document.selection && document.selection.empty) {

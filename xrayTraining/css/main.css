@@ -9,6 +9,11 @@ html, body {
   height: 100%;
 }
 
+#wrongtype {
+  z-index: 10;
+  font-size: 20;
+}
+
 #countingBox {
   width: 130px;
   height: 180px;

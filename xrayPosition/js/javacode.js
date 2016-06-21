@@ -1,7 +1,7 @@
 var iWidth = 700;
 var iHeight = 1000;
 var iMult = 1;
-var whichImage = 1;
+var whichImage = 0;
 var whereImage = "http://echinaceaproject.org/count/xrayPosition/images/";
 var imageObj;
 
@@ -131,12 +131,12 @@ function makecsv() {
   link.setAttribute("download", "countData.csv");
   document.body.appendChild(link); // Required for FF
 
-  link.click(); // This will download the data file 
+  link.click(); // This will download the data file
 }
 
 function switchImage() {
-  whichImage = document.getElementById("images").value;
-  imageObj.src = whereImage + whichImage + ".jpg";
+  whichImage = document.getElementById("images").value - 1;
+  imageObj.src = whereImage + (whichImage+1) + ".jpg";
   clear();
   drawScene();
 }

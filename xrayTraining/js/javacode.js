@@ -1,7 +1,7 @@
 var iWidth = 700;
 var iHeight = 1000;
 var iMult = 1;
-var whichImage = 1;
+var whichImage = 0;
 var whereImage = "http://echinaceaproject.org/count/xrayPosition/images/";
 var imageObj;
 
@@ -17,6 +17,8 @@ var circles2 = [];
 
 
 var DELAY = 300, clicks = 0, timer = null;
+var timer2 = null;
+var timer3 = null;
 
 // -------------------------------------------------------------
 // objects :
@@ -136,8 +138,8 @@ function makecsv() {
 }
 
 function switchImage() {
-  whichImage = document.getElementById("images").value;
-  imageObj.src = whereImage + whichImage + ".jpg";
+  whichImage = document.getElementById("images").value - 1;
+  imageObj.src = whereImage + (whichImage+1) + ".jpg";
   clear();
   drawScene();
 }
@@ -172,24 +174,14 @@ $(function(){
   var dafil = grabamaruggen();
   var data = $.csv.toArrays(dafil);
   for (var i=1; i<data.length; i++) {
-    circles2[1].push(new Circle(data[i][0], data[i][1], 4, data[i][2], data[i][3]))
+    circles2[0].push(new Circle(data[i][0], data[i][1], 4, data[i][2], data[i][3]))
   }
-  // alert(data);
-  // document.getElementById("digit1").innerHTML = data[0][0];
-  // document.getElementById("digit2").innerHTML = data[1][0];
-  // document.getElementById("digit3").innerHTML = data[2][0];
-  // document.getElementById("digit4").innerHTML = data[3][0];
-  // document.getElementById("digit5").innerHTML = data[4][0];
-  // document.getElementById("digit6").innerHTML = data[5][0];
-  // document.getElementById("digit7").innerHTML = data[6][0];
-  // document.getElementById("digit8").innerHTML = data[7][0];
-
 
   canvas = document.getElementById('scene');
   document.getElementsByTagName("body")[0].style.cursor = 'url(cursors/full-pointer.cur), auto';
   ctx = canvas.getContext('2d');
   imageObj = new Image();
-  imageObj.src = whereImage + whichImage + ".jpg";
+  imageObj.src = whereImage + (whichImage+1) + ".jpg";
   imageObj.onload = function() {
     ctx.drawImage(imageObj, 1, 1, iWidth, iHeight);
   };
@@ -204,14 +196,15 @@ $(function(){
   $('#scene').click(function(e) {
     var foundIt = false;
     var rightType = false;
-    setTimeout(function() {
-      $("#wrongtype").fadeOut().empty();
-    }, 5000);
     var parentPosition = getPosition(e.currentTarget);
     var mouseX = (e.clientX - parentPosition.x)/Math.pow(iMult,2);
     var mouseY = (e.clientY - parentPosition.y)/Math.pow(iMult,2);
 
     clicks++;
+    clearTimeout(timer2);
+    clearTimeout(timer3);
+    clear();
+    drawScene();
 
     if(clicks == 1) {
       wasCounting = nowCounting;
@@ -239,11 +232,29 @@ $(function(){
             clicks = 0;             //after action performed, reset counter
           }, DELAY);
         } else {
-          alert("Wrong type!")
+          // alert("Wrong type!")
+          ctx.font = "50px Comic Sans MS";
+          ctx.fillStyle = "#00FBFF";
+          ctx.textAlign = "center";
+          ctx.fillText("Wrong type!", canvas.width/2, 100);
+          ctx.strokeText("Wrong type!", canvas.width/2, 100);
+          timer2 = setTimeout(function() {
+            clear();
+            drawScene();
+          }, 3000)
           clicks = 0;
         }
       } else {
-        alert("There's nothing there!")
+        // alert("There's nothing there!")
+        ctx.font = "50px Comic Sans MS";
+        ctx.fillStyle = "#00FBFF";
+        ctx.textAlign = "center";
+        ctx.fillText("There's nothing there!", canvas.width/2, 100);
+        ctx.strokeText("There's nothing there!", canvas.width/2, 100);
+        timer3 = setTimeout(function() {
+          clear();
+          drawScene();
+        }, 3000)
         clicks = 0;
       }
     } else {

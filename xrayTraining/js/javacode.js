@@ -14,7 +14,7 @@ var emptyCt = [];
 
 var circles = [];
 var circles2 = [];
-
+var circ2Drawn = false;
 
 var DELAY = 300, clicks = 0, timer = null;
 var timer2 = null;
@@ -60,6 +60,17 @@ function clear() { // clear canvas function
 function drawScene() {
   for (var i=0; i<circles[whichImage].length; i++) {
     drawCircle(ctx, circles[whichImage][i].x, circles[whichImage][i].y, circles[whichImage][i].radius, circles[whichImage][i].type);
+  }
+
+  if ($("#points").is(":checked")) {
+    for (var i=0; i<circles2[whichImage].length; i++) {
+      drawCircle(ctx, circles2[whichImage][i].x, circles2[whichImage][i].y, circles2[whichImage][i].radius, circles2[whichImage][i].type);
+    }
+    circ2Drawn = true;
+  } else if (!$("#points").is(":checked") & circ2Drawn) {
+    circ2Drawn = false;
+    clear();
+    drawScene();
   }
 
   document.getElementById('fullCt').innerHTML = fullCt[whichImage];
@@ -149,7 +160,7 @@ function switchImage() {
 
 function grabamaruggen() {
   var result = null;
-  var scriptUrl = "csvs/countData1.csv";
+  var scriptUrl = "csvs/countData_amy.csv";
   $.ajax({
     url: scriptUrl,
     type: 'get',
@@ -174,7 +185,7 @@ $(function(){
   var dafil = grabamaruggen();
   var data = $.csv.toArrays(dafil);
   for (var i=1; i<data.length; i++) {
-    circles2[0].push(new Circle(data[i][0], data[i][1], 4, data[i][2], data[i][3]))
+    circles2[data[i][3]-1].push(new Circle(data[i][0], data[i][1], 4, data[i][2], data[i][3]));
   }
 
   canvas = document.getElementById('scene');

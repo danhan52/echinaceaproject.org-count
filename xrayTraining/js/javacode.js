@@ -55,6 +55,14 @@ function clear() { // clear canvas function
   ctx.drawImage(imageObj, 1, 1, iWidth, iHeight);
 }
 
+function changePoints(checkyBox) {
+  if (checkyBox.checked) {
+    drawScene();
+  } else {
+    clear();
+    drawScene();
+  }
+}
 
 // draw the whole scene
 function drawScene() {
@@ -67,10 +75,6 @@ function drawScene() {
       drawCircle(ctx, circles2[whichImage][i].x, circles2[whichImage][i].y, circles2[whichImage][i].radius, circles2[whichImage][i].type);
     }
     circ2Drawn = true;
-  } else if (!$("#points").is(":checked") & circ2Drawn) {
-    circ2Drawn = false;
-    clear();
-    drawScene();
   }
 
   document.getElementById('fullCt').innerHTML = fullCt[whichImage];

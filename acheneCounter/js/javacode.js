@@ -169,6 +169,7 @@ function eraseCookie(name) {
 // initialization
 
 $(function(){
+  $("#countingBox").draggable();
   // get canvas, context, and create image
   canvas = document.getElementById("scene");
   ctx = canvas.getContext("2d");

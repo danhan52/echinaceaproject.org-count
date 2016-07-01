@@ -1,22 +1,21 @@
-var iWidth = 2250;
-var iHeight = 3000;
-var initWidth = 2250;
-var initHeight = 3000;
-var iMult = 1;
+// set up image size (the changing one) and multiplier
+var iWidth = 2250, iHeight = 3000, iMult = 1;
+// set up image size (the permanent one)
+var initWidth = 2250, initHeight = 3000;
+// make image, canvas, and context objects
 var imageObj;
-
 var canvas, ctx;
+// variables for keeping track up circle locations and count
 var circles = [];
 var count = 0;
-
+// variables for dealing with double click operations
 var DELAY = 300, clicks = 0, timer = null;
-
+// point color and size
 var color = "turquoise";
 var ptSize = 6;
 
 // -------------------------------------------------------------
-// objects :
-
+// create a circle object
 function Circle(x, y, radius){
   this.x = x;
   this.y = y;
@@ -39,15 +38,15 @@ function drawCircle(ctx, x, y) {
   ctx.fill();
 }
 
-function clear() { // clear canvas function
+// clear canvas and redraw image
+function clear() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.drawImage(imageObj, 1, 1, initWidth, initHeight);
 }
 
 
-// draw the whole scene
+// draw all circles and change the count
 function drawScene() {
-  //clear();
   for (var i=0; i<circles.length; i++) { // display all our circles
     drawCircle(ctx, circles[i].x, circles[i].y);
   }
@@ -55,7 +54,10 @@ function drawScene() {
   document.getElementById("count").innerHTML = "Achenes: " + count;
 }
 
-// get position relative to canvas
+// -------------------------------------------------------------
+// interactions with canvas functions
+
+// get position relative to canvas - as opposed to the whole page
 function getPosition(el) {
   var xPos = 0;
   var yPos = 0;
@@ -149,23 +151,6 @@ function getCookie(cname) {
     return "";
 }
 
-function checkCookies() {
-    var col = getCookie("color");
-    var pt = getCookie("ptSize");
-
-    if (col != "") {
-    } else {
-        col = prompt("Please enter your color in hex:", "");
-        if (col != "" && col != null) {
-            setCookie("color", col, 365);
-        }
-        pt = prompt("Please enter pointSize:", "");
-        if (pt != "" && pt != null) {
-            setCookie("ptSize", pt, 365);
-        }
-    }
-}
-
 function changePreferences() {
   color = document.getElementById("colors").value;
   setCookie("color", color, 365);
@@ -176,7 +161,6 @@ function changePreferences() {
   clear();
 }
 
-
 function eraseCookie(name) {
 	setCookie(name,"",-1);
 }
@@ -185,6 +169,7 @@ function eraseCookie(name) {
 // initialization
 
 $(function(){
+  // get canvas, context, and create image
   canvas = document.getElementById("scene");
   ctx = canvas.getContext("2d");
   imageObj = new Image();
@@ -193,14 +178,15 @@ $(function(){
     ctx.drawImage(imageObj, 1, 1, initWidth, initHeight);
   };
 
+  // set preferences
   if (getCookie("color") != "") {
     color = getCookie("color");
-    document.getElementById("colors").value = color;
   }
+  document.getElementById("colors").value = color;
   if (getCookie("ptSize") != "") {
     ptSize = getCookie("ptSize");
-    document.getElementById("pts").value = ptSize;
   }
+  document.getElementById("pts").value = ptSize;
 
   // binding mouseclick event (for adding new dots)
   $("#scene").click(function(e) {

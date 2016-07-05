@@ -13,6 +13,8 @@ var DELAY = 300, clicks = 0, timer = null;
 // point color and size
 var color = "turquoise";
 var ptSize = 6;
+// scrolling things
+var doc, pageHeight, pageWidth, scrolledX, scrolledY;
 
 // -------------------------------------------------------------
 // create a circle object
@@ -94,6 +96,12 @@ function zoomOut() {
   canvas.style.height = iHeight + "px";
   clear();
   drawScene();
+
+  pageHeight = (doc.scrollHeight - doc.clientHeight);
+  pageWidth = (doc.scrollWidth - doc.clientWidth);
+  var toX = Math.floor(percentageScrolledX*pageWidth/100);
+  var toY = Math.floor(percentageScrolledY*pageHeight/100);
+  window.scrollTo(toX, toY);
 }
 
 // zoom in and increase canvas size
@@ -106,6 +114,12 @@ function zoomIn() {
   canvas.style.height = iHeight + "px";
   clear();
   drawScene();
+
+  pageHeight = (doc.scrollHeight - doc.clientHeight);
+  pageWidth = (doc.scrollWidth - doc.clientWidth);
+  var toX = Math.floor(percentageScrolledX*pageWidth/100);
+  var toY = Math.floor(percentageScrolledY*pageHeight/100);
+  window.scrollTo(toX, toY);
 }
 
 // -------------------------------------------------------------
@@ -170,6 +184,18 @@ function eraseCookie(name) {
 
 $(function(){
   $("#countingBox").draggable();
+
+    doc = document.body;
+    pageHeight = (doc.scrollHeight - doc.clientHeight);
+    pageWidth = (doc.scrollWidth - doc.clientWidth);
+
+  window.onscroll = function () {
+    var yPosScroll = doc.scrollTop;
+    percentageScrolledY = Math.floor((yPosScroll / pageHeight) * 100);
+    var xPosScroll = doc.scrollLeft;
+    percentageScrolledX = Math.floor((xPosScroll / pageWidth) * 100);
+    // document.getElementById("digitty").innerHTML = percentageScrolledX + ", " + percentageScrolledY;
+   };
   // get canvas, context, and create image
   canvas = document.getElementById("scene");
   ctx = canvas.getContext("2d");

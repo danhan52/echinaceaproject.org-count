@@ -14,7 +14,7 @@ var emptyCt = [];
 
 var circles = [];
 var circles2 = [];
-var circ2Drawn = false;
+var circles3 = [];
 
 var DELAY = 300, clicks = 0, timer = null;
 var timer2 = null;
@@ -42,12 +42,20 @@ function drawCircle(ctx, x, y, radius, type) {
     ctx.fillStyle = 'rgba(181, 91, 0, 1.0)';
   }  else if (type == "empty") {
     ctx.fillStyle = 'rgba(173, 0, 179, 1.0)';
+  } else if (type == "hint") {
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(0, 255, 255, 1.0)";
   }
 
   ctx.beginPath();
   ctx.arc(x*iMult, y*iMult, radius/iMult, 0, Math.PI*2, true);
   ctx.stroke();
-  ctx.fill();
+  if (type != "hint") {
+    ctx.fill();
+  } else {
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "black";
+  }
 }
 
 function clear() { // clear canvas function
@@ -56,6 +64,15 @@ function clear() { // clear canvas function
 }
 
 function changePoints(checkyBox) {
+  if (checkyBox.checked) {
+    drawScene();
+  } else {
+    clear();
+    drawScene();
+  }
+}
+
+function showHints(checkyBox) {
   if (checkyBox.checked) {
     drawScene();
   } else {
@@ -74,7 +91,12 @@ function drawScene() {
     for (var i=0; i<circles2[whichImage].length; i++) {
       drawCircle(ctx, circles2[whichImage][i].x, circles2[whichImage][i].y, circles2[whichImage][i].radius, circles2[whichImage][i].type);
     }
-    circ2Drawn = true;
+  }
+
+  if ($("#hints").is(":checked")) {
+    for (var i=0; i<circles2[whichImage].length; i++) {
+      drawCircle(ctx, circles2[whichImage][i].x, circles2[whichImage][i].y, 15, "hint");
+    }
   }
 
   document.getElementById('fullCt').innerHTML = fullCt[whichImage];
@@ -138,7 +160,8 @@ function makecsv() {
   for (var i=0; i<20; i++) {
     if (circles[i].length > 0) {
       for (var j=0; j<circles[i].length; j++) {
-          csvContent += circles[i][j].x + "," + circles[i][j].y + "," + circles[i][j].type + "," + circles[i][j].fromImage + "\n";
+        csvContent += circles[i][j].x + "," + circles[i][j].y + "," +
+        circles[i][j].type + "," + circles[i][j].fromImage + "\n";
       }
     }
   }
@@ -157,6 +180,36 @@ function switchImage() {
   imageObj.src = whereImage + (whichImage+1) + ".jpg";
   clear();
   drawScene();
+}
+
+function checkDone() {
+  clear();
+  drawScene();
+  if (circles2[whichImage].length == 0) {
+    ctx.fillStyle = "#FFFFFF";
+    ctx.textAlign = "center";
+    ctx.font = "50px Comic Sans MS";
+    ctx.fillText("You finished!", canvas.width/2, 100);
+    ctx.font = "50px Comic Sans MS";
+    ctx.strokeText("You finished!", canvas.width/2, 100);
+    timer3 = setTimeout(function() {
+      clear();
+      drawScene();
+    }, 3000)
+  } else {
+    ctx.fillStyle = "#FFFFFF";
+    ctx.textAlign = "center";
+    ctx.font = "50px Comic Sans MS";
+    ctx.fillText("There are still " + circles2[whichImage].length, canvas.width/2, 100)
+    ctx.fillText("achenes to find", canvas.width/2, 180);
+    ctx.font = "50px Comic Sans MS";
+    ctx.strokeText("There are still " + circles2[whichImage].length, canvas.width/2, 100)
+    ctx.strokeText("achenes to find", canvas.width/2, 180);
+    timer3 = setTimeout(function() {
+      clear();
+      drawScene();
+    }, 3000)
+  }
 }
 
 // -------------------------------------------------------------
@@ -181,6 +234,7 @@ $(function(){
   for (var i = 0; i < 20; i++) {
     circles.push([]);
     circles2.push([]);
+    circles3.push([]);
     fullCt.push(0);
     partialCt.push(0);
     emptyCt.push(0);
@@ -211,6 +265,7 @@ $(function(){
   $('#scene').click(function(e) {
     var foundIt = false;
     var rightType = false;
+    var alreadyFound = false;
     var parentPosition = getPosition(e.currentTarget);
     var mouseX = (e.clientX - parentPosition.x)/Math.pow(iMult,2);
     var mouseY = (e.clientY - parentPosition.y)/Math.pow(iMult,2);
@@ -230,6 +285,18 @@ $(function(){
           foundIt = true;
           if (wasCounting == circles2[whichImage][i].type) {
             rightType = true;
+            circles3[whichImage].push(circles2[whichImage].splice(i, 1)[0]);
+            break;
+          }
+        }
+      }
+
+      if (!foundIt) {
+        for (var i=0; i<circles3[whichImage].length; i++) {
+          if (Math.pow(Math.pow(circles3[whichImage][i].x - mouseX, 2) +
+          Math.pow(circles3[whichImage][i].y - mouseY, 2), 1/2) < 15) {
+            alreadyFound = true;
+            break;
           }
         }
       }
@@ -248,10 +315,11 @@ $(function(){
           }, DELAY);
         } else {
           // alert("Wrong type!")
-          ctx.font = "50px Comic Sans MS";
-          ctx.fillStyle = "#00FBFF";
+          ctx.fillStyle = "#00FFFF";
           ctx.textAlign = "center";
+          ctx.font = "50px Comic Sans MS";
           ctx.fillText("Wrong type!", canvas.width/2, 100);
+          ctx.font = "50px Comic Sans MS";
           ctx.strokeText("Wrong type!", canvas.width/2, 100);
           timer2 = setTimeout(function() {
             clear();
@@ -260,17 +328,33 @@ $(function(){
           clicks = 0;
         }
       } else {
-        // alert("There's nothing there!")
-        ctx.font = "50px Comic Sans MS";
-        ctx.fillStyle = "#00FBFF";
-        ctx.textAlign = "center";
-        ctx.fillText("There's nothing there!", canvas.width/2, 100);
-        ctx.strokeText("There's nothing there!", canvas.width/2, 100);
-        timer3 = setTimeout(function() {
-          clear();
-          drawScene();
-        }, 3000)
-        clicks = 0;
+        if (alreadyFound) {
+          // alert("You already found that!")
+          ctx.fillStyle = "#00FF00";
+          ctx.textAlign = "center";
+          ctx.font = "50px Comic Sans MS";
+          ctx.fillText("You already found that!", canvas.width/2, 100);
+          ctx.font = "50px Comic Sans MS";
+          ctx.strokeText("You already found that!", canvas.width/2, 100);
+          timer3 = setTimeout(function() {
+            clear();
+            drawScene();
+          }, 3000)
+          clicks = 0;
+        } else {
+          // alert("There's nothing there!")
+          ctx.fillStyle = "#FF0000";
+          ctx.textAlign = "center";
+          ctx.font = "50px Comic Sans MS";
+          ctx.fillText("There's nothing there!", canvas.width/2, 100);
+          ctx.font = "50px Comic Sans MS";
+          ctx.strokeText("There's nothing there!", canvas.width/2, 100);
+          timer3 = setTimeout(function() {
+            clear();
+            drawScene();
+          }, 3000)
+          clicks = 0;
+        }
       }
     } else {
       clearTimeout(timer);    //prevent single-click action

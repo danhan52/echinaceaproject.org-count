@@ -35,8 +35,9 @@
     <br>
     <input type="button" id="switchCt" onclick="switchCount()" value="Switch Counting Type" />
     <p>or press the 's' key to switch</p><br><br>
-    <label><input id="hints" value="hints" type="checkbox"> Show hints</label><br>
+    <label><input id="hints" value="hints" type="checkbox" onchange="showHints(this)"> Show hints</label><br>
     <label><input id="points" value="points" type="checkbox" onchange="changePoints(this)"> Show points</label>
+    <input type="button" id="checkdone" onclick="checkDone()" value="Check if finished" />
     <p id="debugblock"></p>
   </div>
 

@@ -1,8 +1,8 @@
 var iWidth = 700;
 var iHeight = 1000;
 var iMult = 1;
-var whichImage = 0;
-var whereImage = "http://echinaceaproject.org/count/xrayPosition/images/";
+var whichImage = whichImage = Math.floor(Math.random() * 40) + 1;
+var whereImage = "http://echinaceaproject.org/count/xrayTraining/images/";
 var imageObj;
 
 var canvas, ctx;
@@ -176,7 +176,8 @@ function makecsv() {
 }
 
 function switchImage() {
-  whichImage = document.getElementById("images").value - 1;
+  // whichImage = document.getElementById("images").value - 1;
+  whichImage = Math.floor(Math.random() * 40) + 1;
   imageObj.src = whereImage + (whichImage+1) + ".jpg";
   clear();
   drawScene();
@@ -231,7 +232,7 @@ function grabamaruggen() {
 }
 
 $(function(){
-  for (var i = 0; i < 20; i++) {
+  for (var i = 0; i < 40; i++) {
     circles.push([]);
     circles2.push([]);
     circles3.push([]);

@@ -10,21 +10,21 @@
 <link href="css/main.css" rel="stylesheet" type="text/css" title = "main" media="screen" />
 
 <body>
-  <div id="changeCounting">
+  <!-- <div id="changeCounting">
     <form>
       <span>Image:</span>
       <select id="images" onchange="switchImage()">
       </select>
       <script>
       var select = '';
-      for (i=1;i<=20;i++){
+      for (i=1;i<=40;i++){
         select += '<option val=' + i + '>' + i + '</option>';
       }
       $('#images').html(select);
       </script>
       <input type="button" id="writecsv" onclick="makecsv()" value="Make csv of positions" />
     </form>
-  </div>
+  </div> -->
 
   <div id="countingBox">
     <p id="nowCount">Now counting: <span id="full">FULL</span></p>
@@ -38,6 +38,7 @@
     <label><input id="hints" value="hints" type="checkbox" onchange="showHints(this)"> Show hints</label><br>
     <label><input id="points" value="points" type="checkbox" onchange="changePoints(this)"> Show points</label>
     <input type="button" id="checkdone" onclick="checkDone()" value="Check if finished" />
+    <input type="button" id="newimage" onclick="switchImage()" value="Go to a new image" />
     <p id="debugblock"></p>
   </div>
 

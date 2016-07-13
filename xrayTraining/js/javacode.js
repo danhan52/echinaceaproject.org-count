@@ -217,7 +217,7 @@ function checkDone() {
 
 function grabamaruggen() {
   var result = null;
-  var scriptUrl = "csvs/countData_amy.csv";
+  var scriptUrl = "csvs/countData.csv";
   $.ajax({
     url: scriptUrl,
     type: 'get',
@@ -243,7 +243,7 @@ $(function(){
   var dafil = grabamaruggen();
   var data = $.csv.toArrays(dafil);
   for (var i=1; i<data.length; i++) {
-    circles2[data[i][3]-1].push(new Circle(data[i][0], data[i][1], 4, data[i][2], data[i][3]));
+    circles2[data[i][3]].push(new Circle(data[i][0], data[i][1], 4, data[i][2], data[i][3]));
   }
 
   canvas = document.getElementById('scene');

@@ -1,4 +1,3 @@
-/* general styles */
 * {
   margin:0;
   padding:0;
@@ -41,7 +40,6 @@ body {
   margin: auto 170px;
 }
 
-/* tutorial styles */
 #scene {
   position: absolute;
 }

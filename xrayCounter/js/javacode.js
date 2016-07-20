@@ -43,7 +43,8 @@ function drawCircle(ctx, x, y, radius, type) {
   ctx.fill();
 }
 
-function clear() { // clear canvas function
+// clear canvas function
+function clear() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   ctx.drawImage(imageObj, 1, 1, iWidth, iHeight);
 }
@@ -87,30 +88,6 @@ function getPosition(el) {
   };
 }
 
-// zoom out and decrease canvas size
-function zoomOut() {
-  iWidth *= 0.75;
-  iHeight *= 0.75;
-  iMult *= 0.75;
-
-  canvas.style.width = iWidth + "px";
-  canvas.style.height = iHeight + "px";
-  clear();
-  drawScene();
-}
-
-// zoom in and increase canvas size
-function zoomIn() {
-  iWidth /= 0.75;
-  iHeight /= 0.75;
-  iMult /= 0.75;
-
-  canvas.style.width = iWidth + "px";
-  canvas.style.height = iHeight + "px";
-  clear();
-  drawScene();
-}
-
 // -------------------------------------------------------------
 // other helper functions
 
@@ -124,6 +101,9 @@ function getParameterByName(name, url) {
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+
+// -------------------------------------------------------------
+// not used (but could be useful) functions
 
 // switch from one type of counting (e.g. full) to another
 function switchCount() {
@@ -163,6 +143,30 @@ function makecsv() {
   document.body.appendChild(link); // Required for FF
 
   link.click(); // This will download the data file named "my_data.csv".
+}
+
+// zoom out and decrease canvas size
+function zoomOut() {
+  iWidth *= 0.75;
+  iHeight *= 0.75;
+  iMult *= 0.75;
+
+  canvas.style.width = iWidth + "px";
+  canvas.style.height = iHeight + "px";
+  clear();
+  drawScene();
+}
+
+// zoom in and increase canvas size
+function zoomIn() {
+  iWidth /= 0.75;
+  iHeight /= 0.75;
+  iMult /= 0.75;
+
+  canvas.style.width = iWidth + "px";
+  canvas.style.height = iHeight + "px";
+  clear();
+  drawScene();
 }
 
 // -------------------------------------------------------------
